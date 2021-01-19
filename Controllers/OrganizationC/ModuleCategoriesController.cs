@@ -23,10 +23,38 @@ namespace Hub.Controllers.OrganizationC
 
         // GET: api/ModuleCategories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ModuleCategory>>> GetModuleCategory()
+        public IQueryable<Object> GetModuleCategory()
         {
-            return await _context.ModuleCategory.ToListAsync();
+            return _context.Module.Include(a => a.ModuleCategories).Select(
+               a => new
+               {
+                   id = a.Ids,
+                   name = a.ModuleName,
+                   modulecategories = a.ModuleCategories.Select(p => new
+                   {
+                       categoryname = p.ModuleCategoryName,
+                       id = p.Ids
+                   })
+               });
         }
+        // GET: api/ModuleCategories
+        //[HttpGet]
+        //public List<ModuleCategory> GetModule()
+        //{
+        //    var result = new List<ModuleCategory>();
+        //    //result = _context.ModuleCategory.ToList();
+        //    result = (from c in _context.ModuleCategory
+        //              join m in _context.Module on c.ModuleId equals m.Ids
+        //              select new
+        //              {
+        //                  ids = c.Ids,
+        //                  moduleCategory = c.ModuleCategoryName,
+        //                  moduleId = m.Ids,
+        //                  moduleName = m.ModuleName
+        //              }
+        //              ).ToList();
+        //    return result;
+        //}
 
         // GET: api/ModuleCategories/5
         [HttpGet("{id}")]

@@ -1,26 +1,20 @@
-import React from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
   },
   appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -28,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -37,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   hide: {
-    display: "none",
+    display: 'none',
   },
   drawer: {
     width: drawerWidth,
@@ -47,11 +41,17 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
   },
   drawerHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
+  },
+  drawerNav: {
+    textDecoration: 'none',
+    color: '#444',
+    padding: '10px 10px',
+    fontWeight: 'bold',
   },
 }));
 
@@ -62,38 +62,22 @@ export default function AppDrawer({ handleDrawerClose, open }) {
   return (
     <Drawer
       className={classes.drawer}
-      variant="persistent"
-      anchor="left"
+      variant='persistent'
+      anchor='left'
       open={open}
       classes={{
         paper: classes.drawerPaper,
-      }}
-    >
+      }}>
       <div className={classes.drawerHeader}>
-        <IconButton onClick={handleDrawerClose}>
-          {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+        <IconButton onClick={handleDrawerClose}>{theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
       </div>
       <Divider />
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        <ListItem button>
-          <Link to="/modules">
-            <ListItemIcon>
-              <MailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Modules" />
-          </Link>
-        </ListItem>
-      </List>
+      <Link to='/modules' className={classes.drawerNav}>
+        Modules
+      </Link>
+      <Link to='/module-categories' className={classes.drawerNav}>
+        Module Category
+      </Link>
     </Drawer>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppHeader from '../Components/AppHeader';
 import AppDrawer from '../Components/AppDrawer';
@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -28,8 +27,8 @@ export default function Dashboard() {
     <div className={classes.root}>
       <CssBaseline />
       <AppHeader handleDrawerOpen={handleDrawerOpen} open={open} />
-      <AppDrawer handleDrawerClose={handleDrawerClose} open={open}/>
-      <Content open={open}/>
+      <AppDrawer handleDrawerClose={handleDrawerClose} open={open} />
+      <Content open={open} />
     </div>
   );
 }

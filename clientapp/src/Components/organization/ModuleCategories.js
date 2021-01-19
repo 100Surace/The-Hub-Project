@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/organization/module';
+import * as actions from '../../actions/organization/moduleCategories';
 import { Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, withStyles, ButtonGroup, Button } from '@material-ui/core';
-import ModuleForm from './ModuleForm';
+import ModuleForm from './moduleCategoriesForm';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useToasts } from 'react-toast-notifications';
@@ -19,12 +19,12 @@ const styles = (theme) => ({
   },
 });
 
-const Module = ({ classes, ...props }) => {
+const ModuleCategories = ({ classes, ...props }) => {
   const [currentId, setCurrentId] = useState(0);
 
   useEffect(() => {
     props.fetchAll();
-  }); //componentDidMount
+  }, [props]); //componentDidMount
 
   //toast msg.
   const { addToast } = useToasts();
@@ -36,21 +36,22 @@ const Module = ({ classes, ...props }) => {
     <Paper className={classes.paper} elevation={3}>
       <Grid container>
         <Grid item xs={6}>
-          <ModuleForm {...{ currentId, setCurrentId }} />
+          <ModuleForm {...{ currentId, setCurrentId }} fetchModules={props.fetchModules} />
         </Grid>
         <Grid item xs={6}>
           <TableContainer>
             <Table>
               <TableHead className={classes.root}>
                 <TableRow>
-                  <TableCell>Module</TableCell>
+                  <TableCell>Module Category</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {props.moduleList.map(({ ids, moduleName }, index) => {
+                {props.dataList.map(({ ids, moduleName, moduleCategories }, index) => {
                   return (
                     <TableRow key={index} hover>
+                      <TableCell>{moduleCategories}</TableCell>
                       <TableCell>{moduleName}</TableCell>
                       <TableCell>
                         <ButtonGroup variant='text'>
@@ -80,12 +81,13 @@ const Module = ({ classes, ...props }) => {
 };
 
 const mapStateToProps = (state) => ({
-  moduleList: state.modules.list,
+  dataList: state.modules.list,
 });
 
 const mapActionToProps = {
   fetchAll: actions.fetchAll,
   delete: actions.Delete,
+  fetchModules: actions.fetchModules,
 };
 
-export default connect(mapStateToProps, mapActionToProps)(withStyles(styles)(Module));
+export default connect(mapStateToProps, mapActionToProps)(withStyles(styles)(ModuleCategories));

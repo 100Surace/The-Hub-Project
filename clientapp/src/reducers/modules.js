@@ -1,4 +1,4 @@
-import { ACTION_TYPES } from "../actions/organization/module";
+import { ACTION_TYPES } from '../actions/organization/module';
 const initialState = {
   list: [],
 };
@@ -20,13 +20,13 @@ export const modules = (state = initialState, action) => {
     case ACTION_TYPES.UPDATE:
       return {
         ...state,
-        list: state.list.map((x) => (x.ids == action.payload.id ? action.payload : x)),
+        list: state.list.map((x) => (x.ids === action.payload.id ? action.payload : x)),
       };
 
     case ACTION_TYPES.DELETE:
       return {
         ...state,
-        list: state.list.filter((x) => x.ids != action.payload),
+        list: state.list.filter((x) => x.ids !== action.payload),
       };
 
     default:
