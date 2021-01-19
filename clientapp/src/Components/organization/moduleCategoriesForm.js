@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid, TextField, withStyles, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import useForm from '../useForm';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/organization/module';
+import * as actions from '../../actions/organization/moduleCategories';
 import { useToasts } from 'react-toast-notifications';
 
 const mapStateToProps = (state) => ({
@@ -31,8 +31,8 @@ const styles = (theme) => ({
 });
 
 const initialFieldValues = {
-  moduleName: '',
-  moduleCategoryName: '',
+  module: '',
+  name: '',
 };
 
 const ModuleForm = ({ classes, ...props }) => {
@@ -43,9 +43,9 @@ const ModuleForm = ({ classes, ...props }) => {
   //validate({fullName:'jenny'})
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ('moduleName' in fieldValues) temp.moduleName = fieldValues.moduleName ? '' : 'This field is required.';
+    if ('module' in fieldValues) temp.module = fieldValues.module ? '' : 'This field is required.';
 
-    if ('moduleCategoryName' in fieldValues) temp.moduleCategoryName = fieldValues.moduleCategoryName ? '' : 'This field is required.';
+    if ('name' in fieldValues) temp.name = fieldValues.name ? '' : 'This field is required.';
 
     setErrors({
       ...temp,
@@ -84,7 +84,7 @@ const ModuleForm = ({ classes, ...props }) => {
       });
       setErrors({});
     }
-  }, []);
+  }, [props.currentId]);
 
   return (
     <form autoComplete='off' noValidate className={classes.root} onSubmit={handleSubmit}>
@@ -93,10 +93,10 @@ const ModuleForm = ({ classes, ...props }) => {
           <FormControl variant='outlined' className={classes.formControl}>
             <InputLabel id='demo-simple-select-outlined-label'>Module Name</InputLabel>
             <Select
-              name='moduleName'
+              name='module'
               labelId='demo-simple-select-outlined-label'
               id='demo-simple-select-outlined'
-              value={values.moduleName}
+              value={values.module && props.currentId ? values.module : values.moduleId}
               label='Module Name'
               onChange={handleInputChange}>
               {modules.map(({ ids, moduleName }) => (
@@ -109,12 +109,12 @@ const ModuleForm = ({ classes, ...props }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            name='moduleCategoryName'
+            name='name'
             variant='outlined'
             label='Module CategoryName'
-            value={values.moduleCategoryName}
+            value={values.name}
             onChange={handleInputChange}
-            {...(errors.ModuleCategoryName && { error: true, helperText: errors.ModuleCategoryName })} // uppercase module is not form json, just initiized it above
+            {...(errors.name && { error: true, helperText: errors.name })} // uppercase module is not form json, just initiized it above
           />
         </Grid>
         <Grid item xs={12}>

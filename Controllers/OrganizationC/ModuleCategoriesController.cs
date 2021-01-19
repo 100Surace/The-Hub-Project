@@ -25,16 +25,18 @@ namespace Hub.Controllers.OrganizationC
         [HttpGet]
         public IQueryable<Object> GetModuleCategory()
         {
-            return _context.Module.Include(a => a.ModuleCategories).Select(
+            return _context.ModuleCategory.Include(a => a.Module).Select(
                a => new
                {
-                   id = a.Ids,
-                   name = a.ModuleName,
-                   modulecategories = a.ModuleCategories.Select(p => new
-                   {
-                       categoryname = p.ModuleCategoryName,
-                       id = p.Ids
-                   })
+                   ids = a.Ids,
+                   name = a.ModuleCategoryName,
+                   module = a.Module.ModuleName,
+                   moduleId = a.Module.Ids
+                   //modulecategories = a.Module.Select(p => new
+                   //{
+                   //    categoryname = p.ModuleName,
+                   //    id = p.Ids
+                   //})
                });
         }
         // GET: api/ModuleCategories

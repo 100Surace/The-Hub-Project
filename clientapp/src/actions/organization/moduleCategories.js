@@ -7,9 +7,9 @@ export const ACTION_TYPES = {
   FETCH_ALL: 'FETCH_ALL',
 };
 
-const formateData = (data) => ({
-  ...data,
-  age: parseInt(data.age ? data.age : 0),
+const formatData = (data) => ({
+  ModuleCategoryName: data.name,
+  ModuleId: data.module,
 });
 
 export const fetchModules = () => () => {
@@ -30,7 +30,8 @@ export const fetchAll = () => (dispatch) => {
 };
 
 export const create = (data, onSuccess) => (dispatch) => {
-  data = formateData(data);
+  data = formatData(data);
+  console.log(data);
   api
     .moduleCategories()
     .create(data)
@@ -45,7 +46,7 @@ export const create = (data, onSuccess) => (dispatch) => {
 };
 
 export const update = (id, data, onSuccess) => (dispatch) => {
-  data = formateData(data);
+  data = formatData(data);
   api
     .moduleCategories()
     .update(id, data)
