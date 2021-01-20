@@ -8,8 +8,7 @@ export const ACTION_TYPES = {
 };
 
 const formatData = (data) => ({
-  ModuleCategoryName: data.name,
-  ModuleId: data.module,
+  ...data,
 });
 
 export const fetchModules = () => () => {

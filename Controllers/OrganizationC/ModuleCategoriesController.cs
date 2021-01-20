@@ -29,8 +29,8 @@ namespace Hub.Controllers.OrganizationC
                a => new
                {
                    ids = a.Ids,
-                   name = a.ModuleCategoryName,
-                   module = a.Module.ModuleName,
+                   moduleCategoryName = a.ModuleCategoryName,
+                   moduleName = a.Module.ModuleName,
                    moduleId = a.Module.Ids
                    //modulecategories = a.Module.Select(p => new
                    //{

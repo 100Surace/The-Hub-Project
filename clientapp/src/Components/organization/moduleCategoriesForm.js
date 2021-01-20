@@ -31,8 +31,8 @@ const styles = (theme) => ({
 });
 
 const initialFieldValues = {
-  module: '',
-  name: '',
+  moduleCategoryName: '',
+  moduleId: '',
 };
 
 const ModuleForm = ({ classes, ...props }) => {
@@ -43,9 +43,9 @@ const ModuleForm = ({ classes, ...props }) => {
   //validate({fullName:'jenny'})
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ('module' in fieldValues) temp.module = fieldValues.module ? '' : 'This field is required.';
+    if ('moduleCategoryName' in fieldValues) temp.moduleCategoryName = fieldValues.moduleCategoryName ? '' : 'This field is required.';
 
-    if ('name' in fieldValues) temp.name = fieldValues.name ? '' : 'This field is required.';
+    if ('moduleId' in fieldValues) temp.moduleId = fieldValues.moduleId ? '' : 'This field is required.';
 
     setErrors({
       ...temp,
@@ -93,10 +93,10 @@ const ModuleForm = ({ classes, ...props }) => {
           <FormControl variant='outlined' className={classes.formControl}>
             <InputLabel id='demo-simple-select-outlined-label'>Module Name</InputLabel>
             <Select
-              name='module'
+              name='moduleId'
               labelId='demo-simple-select-outlined-label'
               id='demo-simple-select-outlined'
-              value={values.module && props.currentId ? values.module : values.moduleId}
+              value={values.moduleId}
               label='Module Name'
               onChange={handleInputChange}>
               {modules.map(({ ids, moduleName }) => (
@@ -109,12 +109,12 @@ const ModuleForm = ({ classes, ...props }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            name='name'
+            name='moduleCategoryName'
             variant='outlined'
             label='Module CategoryName'
-            value={values.name}
+            value={values.moduleCategoryName}
             onChange={handleInputChange}
-            {...(errors.name && { error: true, helperText: errors.name })} // uppercase module is not form json, just initiized it above
+            {...(errors.moduleCategoryName && { error: true, helperText: errors.moduleCategoryName })} // uppercase module is not form json, just initiized it above
           />
         </Grid>
         <Grid item xs={12}>

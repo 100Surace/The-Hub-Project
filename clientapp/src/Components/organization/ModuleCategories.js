@@ -48,11 +48,11 @@ const ModuleCategories = ({ classes, ...props }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {props.dataList.map(({ ids, name, module }, index) => {
+                {props.dataList.map(({ ids, moduleCategoryName, moduleName }, index) => {
                   return (
                     <TableRow key={index} hover>
-                      <TableCell>{name}</TableCell>
-                      <TableCell>{module}</TableCell>
+                      <TableCell>{moduleCategoryName}</TableCell>
+                      <TableCell>{moduleName}</TableCell>
                       <TableCell>
                         <ButtonGroup variant='text'>
                           <Button>
