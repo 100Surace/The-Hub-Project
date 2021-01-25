@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Route, Switch } from 'react-router-dom';
 import Modules from './organization/Module';
 import ModuleCategory from './organization/ModuleCategories';
+import Orgs from './organization/Orgs';
 
 const drawerWidth = 240;
 
@@ -48,6 +49,7 @@ export default function Content({ open }) {
       <Switch>
         <Route exact path='/modules' component={Modules} />
         <Route exact path='/module-categories' component={ModuleCategory} />
+        <Route exact path='/organizations' component={Orgs} />
       </Switch>
     </main>
   );

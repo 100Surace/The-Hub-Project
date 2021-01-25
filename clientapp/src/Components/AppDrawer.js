@@ -78,6 +78,9 @@ export default function AppDrawer({ handleDrawerClose, open }) {
       <Link to='/module-categories' className={classes.drawerNav}>
         Module Category
       </Link>
+      <Link to='/organizations' className={classes.drawerNav}>
+        Organizations
+      </Link>
     </Drawer>
   );
 }
