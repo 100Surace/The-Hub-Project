@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, TextField, withStyles, Button, FormGroup } from '@material-ui/core';
+import { Grid, TextField, withStyles, Button, FormControl, InputLabel, Select, MenuItem, TextareaAutosize, Switch } from '@material-ui/core';
 import useForm from '../useForm';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/organization/module';
 import { useToasts } from 'react-toast-notifications';
+import API from '../../actions/api';
 
 const mapStateToProps = (state) => ({
   moduleList: state.modules.list,
@@ -28,7 +29,7 @@ const styles = (theme) => ({
   smMargin: {
     margin: theme.spacing(1),
   },
-  fileDiv: {
+  container: {
     padding: '8px',
   },
 });
@@ -54,6 +55,7 @@ const ModuleForm = ({ classes, ...props }) => {
   const [logo, setLogo] = useState();
   const [bannerImg, setBanner] = useState();
   const [orgImg, setOrgImg] = useState();
+  const [moduleCategories, setModuleCategories] = useState([]);
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
@@ -105,6 +107,7 @@ const ModuleForm = ({ classes, ...props }) => {
   };
 
   useEffect(() => {
+    fetchModuleCategories().then(({ data }) => setModuleCategories(data));
     if (props.currentId !== 0) {
       setValues({
         ...props.moduleList.find((x) => x.ids === props.currentId),
@@ -112,6 +115,10 @@ const ModuleForm = ({ classes, ...props }) => {
       setErrors({});
     }
   });
+
+  const fetchModuleCategories = () => {
+    return API.moduleCategories().fetchAll();
+  };
 
   return (
     <form autoComplete='off' noValidate className={classes.root} onSubmit={handleSubmit}>
@@ -125,30 +132,48 @@ const ModuleForm = ({ classes, ...props }) => {
             onChange={handleInputChange}
             {...(errors.id && { error: true, helperText: errors.id })}
           />
-          <TextField
-            name='moduleCategoryId'
-            variant='outlined'
-            label='Module Id'
-            value={values.moduleCategoryId}
-            onChange={handleInputChange}
-            {...(errors.moduleCategoryId && { error: true, helperText: errors.moduleCategoryId })}
-          />
-          <TextField
-            name='serviceType'
-            variant='outlined'
-            label='service Type'
-            value={values.serviceType}
-            onChange={handleInputChange}
-            {...(errors.serviceType && { error: true, helperText: errors.serviceType })}
-          />
-          <TextField
-            name='organizationType'
-            variant='outlined'
-            label='organization Type'
-            value={values.moduleName}
-            onChange={handleInputChange}
-            {...(errors.organizationType && { error: true, helperText: errors.organizationType })}
-          />
+          <FormControl variant='outlined' className={classes.formControl}>
+            <InputLabel>Module Category</InputLabel>
+            <Select
+              name='moduleCategoryId'
+              value={values.moduleCategoryId}
+              onChange={handleInputChange}
+              label='Module Category'
+              {...(errors.moduleCategoryId && { error: true, helperText: errors.moduleCategoryId })}>
+              {moduleCategories.map(({ ids, moduleCategoryName }) => {
+                return (
+                  <MenuItem key={ids} value={ids}>
+                    {moduleCategoryName}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
+            <InputLabel>Service Type</InputLabel>
+            <Select
+              name='serviceType'
+              value={values.serviceType}
+              onChange={handleInputChange}
+              label='Service Type'
+              {...(errors.serviceType && { error: true, helperText: errors.serviceType })}>
+              <MenuItem value={1}>Private</MenuItem>
+              <MenuItem value={2}>Public</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
+            <InputLabel>Organization Type</InputLabel>
+            <Select
+              name='organizationType'
+              value={values.organizationType}
+              onChange={handleInputChange}
+              label='Organization Type'
+              {...(errors.organizationType && { error: true, helperText: errors.organizationType })}>
+              <MenuItem value={1}>National</MenuItem>
+              <MenuItem value={2}>International</MenuItem>
+              <MenuItem value={3}>Multinational</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             name='orgName'
             variant='outlined'
@@ -173,61 +198,74 @@ const ModuleForm = ({ classes, ...props }) => {
             onChange={handleInputChange}
             {...(errors.secondPhone && { error: true, helperText: errors.secondPhone })}
           />
-
-          <TextField
-            name='shortDesc'
-            variant='outlined'
-            label='Short Desc'
-            value={values.shortDesc}
-            onChange={handleInputChange}
-            {...(errors.shortDesc && { error: true, helperText: errors.shortDesc })}
-          />
-          <TextField
-            name='longDesc'
-            variant='outlined'
-            label='long Desc'
-            value={values.longDesc}
-            onChange={handleInputChange}
-            {...(errors.longDesc && { error: true, helperText: errors.longDesc })}
-          />
-          <div className={classes.fileDiv}>
-            <input
-              type='file'
-              name='logo'
-              accept='image/*'
-              label='logo'
-              onChange={handleLogoUpload}
-              {...(errors.logo && { error: true, helperText: errors.logo })}
+          <div className={classes.container}>
+            <TextareaAutosize
+              name='shortDesc'
+              variant='outlined'
+              label='Short Desc'
+              value={values.shortDesc}
+              onChange={handleInputChange}
+              aria-label='minimum height'
+              rowsMin={3}
+              placeholder='Short Description'
+              {...(errors.shortDesc && { error: true, helperText: errors.shortDesc })}
             />
           </div>
-          <div className={classes.fileDiv}>
-            <input
-              type='file'
-              name='bannerImg'
-              accept='image/*'
-              label='bannerImg'
-              onChange={handleBannerUpload}
-              {...(errors.bannerImg && { error: true, helperText: errors.bannerImg })}
+          <div className={classes.container}>
+            <TextareaAutosize
+              name='longDesc'
+              variant='outlined'
+              label='long Desc'
+              value={values.longDesc}
+              onChange={handleInputChange}
+              aria-label='minimum height'
+              rowsMin={3}
+              placeholder='Detailed Description'
             />
           </div>
-          <div className={classes.fileDiv}>
-            <input
-              type='file'
-              name='orgImg'
-              accept='image/*'
-              label='orgImg'
-              onChange={handleOrgImgUpload}
-              {...(errors.orgImg && { error: true, helperText: errors.orgImg })}
-            />
-          </div>
-          <TextField
-            name='status'
-            variant='outlined'
-            label='status'
-            value={values.status}
-            onChange={handleInputChange}
-            {...(errors.status && { error: true, helperText: errors.status })}
-          />
+          <FormControl>
+            <label>Logo</label>
+            <div className={classes.container}>
+              <input
+                type='file'
+                name='logo'
+                accept='image/*'
+                label='logo'
+                onChange={handleLogoUpload}
+                {...(errors.logo && { error: true, helperText: errors.logo })}
+              />
+            </div>
+          </FormControl>
+          <FormControl>
+            <label>Banner</label>
+            <div className={classes.container}>
+              <input
+                type='file'
+                name='bannerImg'
+                accept='image/*'
+                label='bannerImg'
+                onChange={handleBannerUpload}
+                {...(errors.bannerImg && { error: true, helperText: errors.bannerImg })}
+              />
+            </div>
+          </FormControl>
+          <FormControl>
+            <label>Images</label>
+            <div className={classes.container}>
+              <input
+                type='file'
+                name='orgImg'
+                accept='image/*'
+                label='orgImg'
+                onChange={handleOrgImgUpload}
+                {...(errors.orgImg && { error: true, helperText: errors.orgImg })}
+              />
+            </div>
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
+            <label>Status</label>
+            <Switch name='status' checked={values.status} onChange={handleInputChange} color='primary' />
+          </FormControl>
         </Grid>
 
         <Grid item xs={12}>
