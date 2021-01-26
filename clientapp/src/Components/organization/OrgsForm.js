@@ -37,6 +37,7 @@ const styles = (theme) => ({
 const initialFieldValues = {
   id: '',
   moduleCategoryId: '',
+  moduleId: '',
   serviceType: '',
   organizationType: '',
   orgName: '',
@@ -56,6 +57,7 @@ const ModuleForm = ({ classes, ...props }) => {
   const [bannerImg, setBanner] = useState();
   const [orgImg, setOrgImg] = useState();
   const [moduleCategories, setModuleCategories] = useState([]);
+  const [modules, setModules] = useState([]);
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
@@ -108,6 +110,8 @@ const ModuleForm = ({ classes, ...props }) => {
 
   useEffect(() => {
     fetchModuleCategories().then(({ data }) => setModuleCategories(data));
+    fetchModules().then(({ data }) => setModules(data));
+
     if (props.currentId !== 0) {
       setValues({
         ...props.moduleList.find((x) => x.ids === props.currentId),
@@ -118,6 +122,10 @@ const ModuleForm = ({ classes, ...props }) => {
 
   const fetchModuleCategories = () => {
     return API.moduleCategories().fetchAll();
+  };
+
+  const fetchModules = () => {
+    return API.module().fetchAll();
   };
 
   return (
@@ -133,6 +141,23 @@ const ModuleForm = ({ classes, ...props }) => {
             {...(errors.id && { error: true, helperText: errors.id })}
           />
           <FormControl variant='outlined' className={classes.formControl}>
+            <InputLabel>Module</InputLabel>
+            <Select
+              name='moduleId'
+              value={values.moduleId}
+              onChange={handleInputChange}
+              label='Module'
+              {...(errors.moduleId && { error: true, helperText: errors.moduleId })}>
+              {modules.map(({ ids, moduleName }) => {
+                return (
+                  <MenuItem key={ids} value={ids}>
+                    {moduleName}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
             <InputLabel>Module Category</InputLabel>
             <Select
               name='moduleCategoryId'
@@ -140,12 +165,13 @@ const ModuleForm = ({ classes, ...props }) => {
               onChange={handleInputChange}
               label='Module Category'
               {...(errors.moduleCategoryId && { error: true, helperText: errors.moduleCategoryId })}>
-              {moduleCategories.map(({ ids, moduleCategoryName }) => {
-                return (
-                  <MenuItem key={ids} value={ids}>
-                    {moduleCategoryName}
-                  </MenuItem>
-                );
+              {moduleCategories.map(({ ids, moduleCategoryName, moduleId }) => {
+                if (moduleId === values.moduleId)
+                  return (
+                    <MenuItem key={ids} value={ids}>
+                      {moduleCategoryName}
+                    </MenuItem>
+                  );
               })}
             </Select>
           </FormControl>
