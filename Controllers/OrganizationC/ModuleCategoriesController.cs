@@ -40,6 +40,20 @@ namespace Hub.Controllers.OrganizationC
                });
         }
         // GET: api/ModuleCategories
+        [HttpGet("module/{id}")]
+        public IQueryable<Object> GetModuleCategoriesByModuleId(int id)
+        {
+            return _context.ModuleCategory.Include(a => a.Module).Select(
+               a => new
+               {
+                   ids = a.Ids,
+                   moduleCategoryName = a.ModuleCategoryName,
+                   moduleName = a.Module.ModuleName,
+                   moduleId = a.Module.Ids
+               }).Where(c => c.moduleId == id);
+        }
+
+        // GET: api/ModuleCategories
         //[HttpGet]
         //public List<ModuleCategory> GetModule()
         //{

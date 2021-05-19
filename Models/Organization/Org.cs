@@ -1,6 +1,7 @@
 ﻿using Hub.Controllers.Info;
 using Hub.Models.Event;
 using Hub.Models.OrganizationFeature;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -60,20 +61,20 @@ namespace Hub.Models.Organization
         public string SecondPhone { get; set; }
 
 
-
-        [StringLength(500, MinimumLength = 5), Display(Name = "Short Description Of Your Organization")]
-        public string ShortDesc { get; set; }
-
+        [StringLength(500, MinimumLength = 0), Display(Name = "Short Description Of Your Organization")]
+        public string? ShortDesc { get; set; }
 
 
-        [StringLength(2000, MinimumLength = 5), Display(Name = "Long Description Of Your Organization")]
-        public string LongDesc { get; set; }
+        [StringLength(2000, MinimumLength = 0), Display(Name = "Long Description Of Your Organization")]
+        public string? LongDesc { get; set; }
 
 
 
         [Display(Name = "Your Organization Logo Image"), StringLength(100)]
         public string Logo { get; set; }
 
+        [NotMapped]
+        public IFormFile ImageFile { get; set; }
 
 
         [Display(Name = "Your Organization Main Banner Image"), StringLength(100)]
@@ -84,6 +85,8 @@ namespace Hub.Models.Organization
         [Display(Name = "Your Organization Featured Images"), StringLength(100)]
         public string OrgImg { get; set; }
 
+        [NotMapped]
+        public List<IFormFile> OrgImageFiles { get; set; }
 
 
         [Required, Display(Name = "Organization Status")]  // This is to control the organization policy and claim for future use (Example if the nauual fee is paid this need to auto turn true)
