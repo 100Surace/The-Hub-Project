@@ -61,8 +61,8 @@ namespace Hub.Controllers.OrganizationC
                        //    o.Id,
                        //    o.OrgName,
                        //    o.ModuleCategoryId,
-                       //    o.serviceType,
-                       //    o.organizationType,
+                       //    o.ServiceType,
+                       //    o.OrganizationType,
                        //    o.Logo,
                        //    o.Status,
                        //    o.ShortDesc,
@@ -100,8 +100,8 @@ namespace Hub.Controllers.OrganizationC
                            o.Id,
                            o.OrgName,
                            o.ModuleCategoryId,
-                           o.serviceType,
-                           o.organizationType,
+                           o.ServiceType,
+                           o.OrganizationType,
                            o.Logo,
                            o.Status,
                            o.ShortDesc,
@@ -138,14 +138,27 @@ namespace Hub.Controllers.OrganizationC
 
             if (org.ImageFile != null)
             {
+                string dir = "Uploads/Orgs/OrgLogos";
                 DeleteImage(old.First().Logo);
-                org.Logo = await SaveImage(org.ImageFile);
+                org.Logo = await SaveImage(org.ImageFile, dir);
             }
 
-           //if (org.OrgImageFiles != null)
-            //{
-              //  org.Logo = await SaveImage(org.ImageFile);
-            //}
+            if (org.OrgImageFiles.Files.Count != 0)
+            {
+                string images = "";
+                string dir = "Uploads/Orgs/OrgImages";
+                foreach (IFormFile file in org.OrgImageFiles.Files)
+                {
+                    if (file.Name == "orgImageFiles")
+                    {
+                        images += await SaveImage(file, dir) + ";";
+                    }
+                }
+                if (images != "")
+                {
+                    org.OrgImg = images;
+                }
+            }
 
             _context.Entry(org).State = EntityState.Modified;
 
@@ -174,8 +187,8 @@ namespace Hub.Controllers.OrganizationC
                            o.Id,
                            o.OrgName,
                            o.ModuleCategoryId,
-                           o.serviceType,
-                           o.organizationType,
+                           o.ServiceType,
+                           o.OrganizationType,
                            o.Logo,
                            o.Status,
                            o.ShortDesc,
@@ -202,7 +215,8 @@ namespace Hub.Controllers.OrganizationC
         {
             if (org.ImageFile != null)
             {
-                org.Logo = await SaveImage(org.ImageFile);
+                string dir = "Uploads/Orgs/OrgLogos";
+                org.Logo = await SaveImage(org.ImageFile, dir);
             }
 
             _context.Org.Add(org);
@@ -218,8 +232,8 @@ namespace Hub.Controllers.OrganizationC
                            o.Id,
                            o.OrgName,
                            o.ModuleCategoryId,
-                           o.serviceType,
-                           o.organizationType,
+                           o.ServiceType,
+                           o.OrganizationType,
                            o.Logo,
                            o.Status,
                            o.ShortDesc,
@@ -259,25 +273,33 @@ namespace Hub.Controllers.OrganizationC
             return _context.Org.Any(e => e.Ids == id);
         }
         [NonAction]
-        public async Task<string> SaveImage(IFormFile imageFile)
+        public async Task<string> SaveImage(IFormFile imageFile, string dirPath)
         {
             string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
             imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
-            string filePath = "Uploads/Orgs/" + imageName;
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, filePath);
-            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            string dir = Path.Combine(_hostEnvironment.ContentRootPath, dirPath);
+            string filePath = dir + "/ " + imageName;
+            string fileUrl = dirPath + "/ " + imageName;
+
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await imageFile.CopyToAsync(fileStream);
             }
-            return filePath;
+            return fileUrl;
         }
 
         [NonAction]
         public void DeleteImage(string imagePath)
         {
-            var filePath = Path.Combine(_hostEnvironment.ContentRootPath, imagePath);
-            if (System.IO.File.Exists(filePath))
-                System.IO.File.Delete(filePath);
+            if (imagePath != null)
+            {
+                var filePath = Path.Combine(_hostEnvironment.ContentRootPath, imagePath);
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+            }
         }
     }
 }

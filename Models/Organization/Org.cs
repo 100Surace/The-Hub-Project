@@ -26,15 +26,15 @@ namespace Hub.Models.Organization
         public ModuleCategory ModuleCategory { get; set; }
 
 
-        public enum ServiceType
+        public enum ServiceTypes
         {
             Private,
             Public
         }
 
-        [Required, EnumDataType(typeof(ServiceType)), Display(Name = "Select Organization Service")] // organization need to select if they are private or public
-        public ServiceType serviceType { get; set; }
-        public enum OrganizationType
+        [Required, EnumDataType(typeof(ServiceTypes)), Display(Name = "Select Organization Service")] // organization need to select if they are private or public
+        public ServiceTypes ServiceType { get; set; }
+        public enum OrganizationTypes
         {
             National,
             International,
@@ -42,8 +42,8 @@ namespace Hub.Models.Organization
         }
 
 
-        [Required, EnumDataType(typeof(OrganizationType)), Display(Name = "Select Organization Type")] //organization must select if they are National or International
-        public OrganizationType organizationType { get; set; }
+        [Required, EnumDataType(typeof(OrganizationTypes)), Display(Name = "Select Organization Type")] //organization must select if they are National or International
+        public OrganizationTypes OrganizationType { get; set; }
 
 
 
@@ -62,11 +62,11 @@ namespace Hub.Models.Organization
 
 
         [StringLength(500, MinimumLength = 0), Display(Name = "Short Description Of Your Organization")]
-        public string? ShortDesc { get; set; }
+        public string ShortDesc { get; set; }
 
 
         [StringLength(2000, MinimumLength = 0), Display(Name = "Long Description Of Your Organization")]
-        public string? LongDesc { get; set; }
+        public string LongDesc { get; set; }
 
 
 
@@ -86,7 +86,7 @@ namespace Hub.Models.Organization
         public string OrgImg { get; set; }
 
         [NotMapped]
-        public List<IFormFile> OrgImageFiles { get; set; }
+        public IFormCollection OrgImageFiles { get; set; }
 
 
         [Required, Display(Name = "Organization Status")]  // This is to control the organization policy and claim for future use (Example if the nauual fee is paid this need to auto turn true)
