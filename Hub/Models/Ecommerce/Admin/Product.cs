@@ -56,6 +56,9 @@ namespace Hub.Models.Ecommerce.Admin
 
         public ICollection<ProductVariant> ProductVariants { get; set; }
 
+        [NotMapped]
+        public string ProSingle { get; set; }
+
         public ICollection<ProductOption> ProductOptions { get; set; }
 
         public ICollection<ProductTag> ProductTags { get; set; }

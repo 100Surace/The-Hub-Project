@@ -35,7 +35,7 @@ namespace Hub.Models.Ecommerce.Admin
 
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal CompareAtPrice { get; set; }   //Sale Price
+        public decimal CompareAtPrice { get; set; }   //Regular Price
 
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]

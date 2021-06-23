@@ -10,6 +10,7 @@ using Hub.Models.Ecommerce.Admin;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 
 namespace Hub.Controllers.Ecommerce.Admin
 {
@@ -79,16 +80,26 @@ namespace Hub.Controllers.Ecommerce.Admin
             return NoContent();
         }
 
+        struct ProSingle
+        {
+            public string sku { get; set; }
+            public string barcode { get; set; }
+            public string compareAtPrice { get; set; }
+            public string price { get; set; }
+            public string costPrice { get; set; }
+        }
+
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IQueryable<Object>> PostProduct([FromForm]Product product)
+        public async Task<IQueryable<Object>> PostProduct([FromForm] Product product)
         {
             //_context.Product.Add(product);
             //await _context.SaveChangesAsync();
 
             //return CreatedAtAction("GetProduct", new { id = product.Id }, product);
 
+            var proSingle = JsonConvert.DeserializeObject<ProSingle>(product.ProSingle);
 
             var pID = 0;
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -109,46 +120,57 @@ namespace Hub.Controllers.Ecommerce.Admin
                     await _context.SaveChangesAsync();
                     pID = prod.Id;
 
-
-                    var ProductImage = new ProductImage
-                    {
-                        ProductId = pID,
-                        ProductImages = "",
-                        Alt = ""
-                    };
-
+                    // product images
                     if (product.ProImages.Count > 0)
                     {
-                        string images = "";
-                        string alts = "";
                         int count = 0;
                         foreach (IFormFile file in product.ProImages)
                         {
-                            count++;
-                            alts += product.ProductTitle + " " + count.ToString() + ",";
+                            var ProductImage = new ProductImage
+                            {
+                                ProductId = pID,
+                                ProductImages = "",
+                                Alt = ""
+                            };
 
-                            images += await SaveImage(pID, file) + ",";
-                        }
-                        if (images != "")
-                        {
-                            ProductImage.ProductImages = images.TrimEnd(',');
-                            ProductImage.Alt = alts.TrimEnd(',');
+                            count++;
+                            string alt = product.ProductTitle + " " + count.ToString();
+
+                            string imagePath = await SaveImage(pID, file);
+
+                            ProductImage.ProductImages = imagePath;
+                            ProductImage.Alt = alt;
+
+                            _context.ProductImage.Add(ProductImage);
+                            await _context.SaveChangesAsync();
                         }
                     }
 
-                    _context.ProductImage.Add(ProductImage);
+                    // product variants
+                    var variant = new ProductVariant
+                    {
+                        ProductId = pID,
+                        Sku = proSingle.sku,
+                        Barcode = proSingle.barcode,
+                        CompareAtPrice = decimal.Parse(proSingle.compareAtPrice),
+                        Price = decimal.Parse(proSingle.price),
+                        CostPrice = decimal.Parse(proSingle.costPrice),
+                        Option = ""
+                    };
+                    _context.ProductVariant.Add(variant);
                     await _context.SaveChangesAsync();
+
 
                     transaction.Commit();
                 }
-                catch(SqlException ex)
+                catch (SqlException ex)
                 {
                     transaction.Rollback();
 
                     throw;
                 }
             }
-                    
+
 
             var res = (from p in _context.Product
                        where p.Id == pID
