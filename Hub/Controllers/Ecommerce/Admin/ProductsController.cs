@@ -87,6 +87,7 @@ namespace Hub.Controllers.Ecommerce.Admin
             public string compareAtPrice { get; set; }
             public string price { get; set; }
             public string costPrice { get; set; }
+            public string quantity { get; set; }
         }
 
         // POST: api/Products
@@ -158,6 +159,16 @@ namespace Hub.Controllers.Ecommerce.Admin
                         Option = ""
                     };
                     _context.ProductVariant.Add(variant);
+                    await _context.SaveChangesAsync();
+                    var varId = variant.Id;
+
+                    // inventory
+                    var inventory = new Inventory
+                    {
+                        ProductVariantId = varId,
+                        Available = int.Parse(proSingle.quantity)
+                    };
+                    _context.Inventory.Add(inventory);
                     await _context.SaveChangesAsync();
 
 
