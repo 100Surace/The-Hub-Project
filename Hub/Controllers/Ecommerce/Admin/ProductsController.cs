@@ -80,7 +80,7 @@ namespace Hub.Controllers.Ecommerce.Admin
             return NoContent();
         }
 
-        struct ProSingle
+        struct ProVariant
         {
             public string sku { get; set; }
             public string barcode { get; set; }
@@ -88,6 +88,7 @@ namespace Hub.Controllers.Ecommerce.Admin
             public string price { get; set; }
             public string costPrice { get; set; }
             public string quantity { get; set; }
+            public string option { get; set; }
         }
 
         // POST: api/Products
@@ -100,7 +101,6 @@ namespace Hub.Controllers.Ecommerce.Admin
 
             //return CreatedAtAction("GetProduct", new { id = product.Id }, product);
 
-            var proSingle = JsonConvert.DeserializeObject<ProSingle>(product.ProSingle);
 
             var pID = 0;
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -148,28 +148,65 @@ namespace Hub.Controllers.Ecommerce.Admin
                     }
 
                     // product variants
-                    var variant = new ProductVariant
+                    // if single product
+                    if (product.ProSingle != null)
                     {
-                        ProductId = pID,
-                        Sku = proSingle.sku,
-                        Barcode = proSingle.barcode,
-                        CompareAtPrice = decimal.Parse(proSingle.compareAtPrice),
-                        Price = decimal.Parse(proSingle.price),
-                        CostPrice = decimal.Parse(proSingle.costPrice),
-                        Option = ""
-                    };
-                    _context.ProductVariant.Add(variant);
-                    await _context.SaveChangesAsync();
-                    var varId = variant.Id;
+                        var variants = JsonConvert.DeserializeObject<ProVariant>(product.ProSingle);
 
-                    // inventory
-                    var inventory = new Inventory
+
+                        var variant = new ProductVariant
+                        {
+                            ProductId = pID,
+                            Sku = variants.sku,
+                            Barcode = variants.barcode,
+                            CompareAtPrice = decimal.Parse(variants.compareAtPrice),
+                            Price = decimal.Parse(variants.price),
+                            CostPrice = decimal.Parse(variants.costPrice),
+                            Option = variants.option
+                        };
+                        _context.ProductVariant.Add(variant);
+                        await _context.SaveChangesAsync();
+                        var varId = variant.Id;
+
+                        // inventory
+                        var inventory = new Inventory
+                        {
+                            ProductVariantId = varId,
+                            Available = int.Parse(variants.quantity)
+                        };
+                        _context.Inventory.Add(inventory);
+                        await _context.SaveChangesAsync();
+                    }
+                    // if product has many variants
+                    else
                     {
-                        ProductVariantId = varId,
-                        Available = int.Parse(proSingle.quantity)
-                    };
-                    _context.Inventory.Add(inventory);
-                    await _context.SaveChangesAsync();
+                        foreach (string varnt in product.ProVariants)
+                        {
+                            var variants = JsonConvert.DeserializeObject<ProVariant>(varnt);
+                            var variant = new ProductVariant
+                            {
+                                ProductId = pID,
+                                Sku = variants.sku,
+                                Barcode = variants.barcode,
+                                CompareAtPrice = decimal.Parse(variants.compareAtPrice),
+                                Price = decimal.Parse(variants.price),
+                                CostPrice = decimal.Parse(variants.costPrice),
+                                Option = variants.option
+                            };
+                            _context.ProductVariant.Add(variant);
+                            await _context.SaveChangesAsync();
+                            var varId = variant.Id;
+
+                            // inventory
+                            var inventory = new Inventory
+                            {
+                                ProductVariantId = varId,
+                                Available = int.Parse(variants.quantity)
+                            };
+                            _context.Inventory.Add(inventory);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
 
 
                     transaction.Commit();
