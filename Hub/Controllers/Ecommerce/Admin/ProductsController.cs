@@ -124,27 +124,28 @@ namespace Hub.Controllers.Ecommerce.Admin
                     // product images
                     if (product.ProImages.Count > 0)
                     {
+                        var ProductImage = new ProductImage
+                        {
+                            ProductId = pID,
+                            ProductImages = "",
+                            Alt = ""
+                        };
+                        string images = "";
+                        string alts = "";
                         int count = 0;
+
                         foreach (IFormFile file in product.ProImages)
                         {
-                            var ProductImage = new ProductImage
-                            {
-                                ProductId = pID,
-                                ProductImages = "",
-                                Alt = ""
-                            };
-
                             count++;
-                            string alt = product.ProductTitle + " " + count.ToString();
+                            alts += product.ProductTitle + " " + count.ToString() + ",";
 
-                            string imagePath = await SaveImage(pID, file);
-
-                            ProductImage.ProductImages = imagePath;
-                            ProductImage.Alt = alt;
-
-                            _context.ProductImage.Add(ProductImage);
-                            await _context.SaveChangesAsync();
+                            images += await SaveImage(pID, file) + ",";
                         }
+                        ProductImage.ProductImages = images.TrimEnd(',');
+                        ProductImage.Alt = alts.TrimEnd(',');
+
+                        _context.ProductImage.Add(ProductImage);
+                        await _context.SaveChangesAsync();
                     }
 
                     // product variants
@@ -255,8 +256,7 @@ namespace Hub.Controllers.Ecommerce.Admin
         public async Task<string> SaveImage(int PID, IFormFile imageFile)
         {
             string dirPath = "Uploads/Products/" + PID.ToString();
-            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
-            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            string imageName = "product_" + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
             string dir = Path.Combine(_hostEnvironment.ContentRootPath, dirPath);
             string filePath = dir + "/" + imageName;
             string fileUrl = dirPath + "/" + imageName;
