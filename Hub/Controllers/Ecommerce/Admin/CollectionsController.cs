@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hub.Data;
 using Hub.Models.Ecommerce.Admin;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hub.Controllers.Ecommerce.Admin
 {
@@ -76,12 +77,25 @@ namespace Hub.Controllers.Ecommerce.Admin
         // POST: api/Collections
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Collection>> PostCollection(Collection collection)
+        [Authorize]
+        public async Task<IQueryable<Object>> PostCollection([FromForm]Collection collection)
         {
             _context.Collection.Add(collection);
             await _context.SaveChangesAsync();
+            var CID = collection.Id;
 
-            return CreatedAtAction("GetCollection", new { id = collection.Id }, collection);
+            var res = (from c in _context.Collection
+                       where c.Id == CID
+                       select new
+                       {
+                           c.Id,
+                           c.CollectionName,
+                           c.Aviliablefrom,
+                           c.AviliableTill,
+                           c.CollectionImage,
+                           c.Status
+                       }); ;
+            return res;
         }
 
         // DELETE: api/Collections/5

@@ -123,13 +123,7 @@ namespace Hub.Controllers.Ecommerce.Admin
 
                     // product images
                     if (product.ProImages.Count > 0)
-                    {
-                        var ProductImage = new ProductImage
-                        {
-                            ProductId = pID,
-                            ProductImages = "",
-                            Alt = ""
-                        };
+                    { 
                         string images = "";
                         string alts = "";
                         int count = 0;
@@ -141,8 +135,12 @@ namespace Hub.Controllers.Ecommerce.Admin
 
                             images += await SaveImage(pID, file) + ",";
                         }
-                        ProductImage.ProductImages = images.TrimEnd(',');
-                        ProductImage.Alt = alts.TrimEnd(',');
+                        var ProductImage = new ProductImage
+                        {
+                            ProductId = pID,
+                            ProductImages = images.TrimEnd(','),
+                            Alt = alts.TrimEnd(',')
+                        };
 
                         _context.ProductImage.Add(ProductImage);
                         await _context.SaveChangesAsync();
