@@ -15,6 +15,7 @@ namespace Hub.Models.Ecommerce.Admin
         [Key]
         public int Id { get; set; }
 
+        public string UserId { get; set; }
 
         [RegularExpression(@"^[A-Z]+[a-zA-Z\s]*$")]
         [Required, StringLength(200)]

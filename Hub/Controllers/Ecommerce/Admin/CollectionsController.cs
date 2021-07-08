@@ -78,7 +78,7 @@ namespace Hub.Controllers.Ecommerce.Admin
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<IQueryable<Object>> PostCollection([FromForm]Collection collection)
+        public async Task<IQueryable<Object>> PostCollection([FromForm] Collection collection)
         {
             _context.Collection.Add(collection);
             await _context.SaveChangesAsync();
@@ -93,7 +93,8 @@ namespace Hub.Controllers.Ecommerce.Admin
                            c.Aviliablefrom,
                            c.AviliableTill,
                            c.CollectionImage,
-                           c.Status
+                           c.Status, 
+                           c.UserId
                        }); ;
             return res;
         }
