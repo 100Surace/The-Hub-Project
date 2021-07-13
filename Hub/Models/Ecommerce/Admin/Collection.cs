@@ -30,7 +30,6 @@ namespace Hub.Models.Ecommerce.Admin
         public DateTime AviliableTill { get; set; }
 
 
-        [RegularExpression(@"^[A-Z]+[a-zA-Z\s]*$")]
         public string CollectionImage { get; set; }
         [NotMapped]
         public IFormFile CImage { get; set; }

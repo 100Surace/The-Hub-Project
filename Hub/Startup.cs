@@ -46,13 +46,13 @@ namespace Hub
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = "https://securetoken.google.com/sewa-hub";
+                    options.Authority = "https://securetoken.google.com/sewahub-2020";
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "https://securetoken.google.com/sewa-hub",
+                        ValidIssuer = "https://securetoken.google.com/sewahub-2020",
                         ValidateAudience = true,
-                        ValidAudience = "sewa-hub",
+                        ValidAudience = "sewahub-2020",
                         ValidateLifetime = true
                     };
                 });

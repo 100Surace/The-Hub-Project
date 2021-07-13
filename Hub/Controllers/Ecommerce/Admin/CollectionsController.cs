@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Hub.Data;
 using Hub.Models.Ecommerce.Admin;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Hub.Controllers.Ecommerce.Admin
 {
@@ -16,10 +18,12 @@ namespace Hub.Controllers.Ecommerce.Admin
     public class CollectionsController : ControllerBase
     {
         private readonly HubDbContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CollectionsController(HubDbContext context)
+        public CollectionsController(HubDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            this._hostEnvironment = hostEnvironment;
         }
 
         // GET: api/Collections
@@ -80,6 +84,12 @@ namespace Hub.Controllers.Ecommerce.Admin
         [Authorize]
         public async Task<IQueryable<Object>> PostCollection([FromForm] Collection collection)
         {
+
+            if (collection.CImage != null)
+            {
+                string imageName = await SaveImage(collection.CImage);
+                collection.CollectionImage = imageName;
+            }
             _context.Collection.Add(collection);
             await _context.SaveChangesAsync();
             var CID = collection.Id;
@@ -118,6 +128,36 @@ namespace Hub.Controllers.Ecommerce.Admin
         private bool CollectionExists(int id)
         {
             return _context.Collection.Any(e => e.Id == id);
+        }
+
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile imageFile)
+        {
+            string dirPath = "Uploads/E-commerce/ProductCollection";
+            string imageName = "product_collection_" + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            string dir = Path.Combine(_hostEnvironment.ContentRootPath, dirPath);
+            string filePath = dir + "/" + imageName;
+            string fileUrl = dirPath + "/" + imageName;
+
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            return fileUrl;
+        }
+
+        [NonAction]
+        public void DeleteImage(string imagePath)
+        {
+            if (imagePath != null)
+            {
+                var filePath = Path.Combine(_hostEnvironment.ContentRootPath, imagePath);
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+            }
         }
     }
 }

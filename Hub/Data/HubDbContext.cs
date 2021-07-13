@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hub.Models.Ecommerce.Admin;
+using Hub.Models.RealEstate;
 
 namespace Hub.Data
 {
@@ -58,5 +59,7 @@ namespace Hub.Data
         public DbSet<Hub.Models.CompanyUser> CompanyUser { get; set; }
 
         public DbSet<Hub.Models.HubAddress> HubAddress { get; set; }
+
+        public DbSet<Hub.Models.RealEstate.RealEstateCategory> RealEstateCategory { get; set; }
     }
 }
