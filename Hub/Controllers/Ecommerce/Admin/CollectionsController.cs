@@ -15,6 +15,7 @@ namespace Hub.Controllers.Ecommerce.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CollectionsController : ControllerBase
     {
         private readonly HubDbContext _context;
@@ -77,11 +78,37 @@ namespace Hub.Controllers.Ecommerce.Admin
 
             return NoContent();
         }
+        
+        public struct ColStatus
+        {
+            public bool value { set; get; }
+        }
+        // PUT: api/Collections/5/status
+        [HttpPut("{id}/status")]
+        public async Task<IQueryable<Object>> UpdateCollectionStatus(int id, ColStatus status)
+        {
+            var col = await _context.Collection.FirstOrDefaultAsync(c=>c.Id==id);
+            col.Status = status.value;
+            await _context.SaveChangesAsync();
+
+            var res = (from c in _context.Collection
+                       where c.Id == id
+                       select new
+                       {
+                           c.Id,
+                           c.CollectionName,
+                           c.Aviliablefrom,
+                           c.AviliableTill,
+                           c.CollectionImage,
+                           c.Status,
+                           c.UserId
+                       }); ;
+            return res;
+        }
 
         // POST: api/Collections
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize]
         public async Task<IQueryable<Object>> PostCollection([FromForm] Collection collection)
         {
 
