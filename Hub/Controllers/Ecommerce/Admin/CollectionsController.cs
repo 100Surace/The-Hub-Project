@@ -51,13 +51,9 @@ namespace Hub.Controllers.Ecommerce.Admin
         // PUT: api/Collections/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCollection(int id, Collection collection)
+        public async Task<IQueryable<Object>> PutCollection(int id, [FromForm] Collection collection)
         {
-            if (id != collection.Id)
-            {
-                return BadRequest();
-            }
-
+            collection.Id = id;
             _context.Entry(collection).State = EntityState.Modified;
 
             try
@@ -66,17 +62,22 @@ namespace Hub.Controllers.Ecommerce.Admin
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CollectionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+               //
             }
 
-            return NoContent();
+            var res = (from c in _context.Collection
+                   where c.Id == id
+                   select new
+                   {
+                       c.Id,
+                       c.CollectionName,
+                       c.Aviliablefrom,
+                       c.AviliableTill,
+                       c.CollectionImage,
+                       c.Status,
+                       c.UserId
+                   }); ;
+            return res;
         }
         
         public struct ColStatus
