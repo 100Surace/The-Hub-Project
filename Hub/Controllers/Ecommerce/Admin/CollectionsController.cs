@@ -53,6 +53,13 @@ namespace Hub.Controllers.Ecommerce.Admin
         [HttpPut("{id}")]
         public async Task<IQueryable<Object>> PutCollection(int id, [FromForm] Collection collection)
         {
+            if (collection.CImage != null)
+            {
+                DeleteImage(collection.CollectionImage);
+                string imageName = await SaveImage(collection.CImage);
+                collection.CollectionImage = imageName;
+            }
+
             collection.Id = id;
             _context.Entry(collection).State = EntityState.Modified;
 
@@ -91,6 +98,37 @@ namespace Hub.Controllers.Ecommerce.Admin
             var col = await _context.Collection.FirstOrDefaultAsync(c=>c.Id==id);
             col.Status = status.value;
             await _context.SaveChangesAsync();
+
+            var res = (from c in _context.Collection
+                       where c.Id == id
+                       select new
+                       {
+                           c.Id,
+                           c.CollectionName,
+                           c.Aviliablefrom,
+                           c.AviliableTill,
+                           c.CollectionImage,
+                           c.Status,
+                           c.UserId
+                       }); ;
+            return res;
+        }
+
+        // PUT: api/Collections/5/status
+        [HttpPut("{id}/image")]
+        public async Task<IQueryable<Object>> DeleteCollectionImage(int id)
+        {
+            var COLL = await _context.Collection.FirstOrDefaultAsync(c => c.Id == id);
+            try
+            {
+                DeleteImage(COLL.CollectionImage);
+                COLL.CollectionImage = null;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                //
+            }
 
             var res = (from c in _context.Collection
                        where c.Id == id
